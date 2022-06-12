@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html onclick="jump();">
+<head>
+<title>Rolling Ball Game</title>
+<style>
+#cont{
+padding-top:20px;
+padding-bottom:20px;
+border: 1px black;
+background-color: orange;
+width:600px;
+}
+#game{
+border: 1px black;
+background-color: lightgrey;
+height: 200px;
+width: 500px;
+margin-left:50px;
+}
+#player{
+width: 20px;
+height: 50px;
+background-color: red;
+border:2px solid black;
+border-radius:0 0 15px 15px;
+position: relative;
+top: 145px;
+animation:;
+}
+@keyframes jump{
+0%{top:150px;}
+50%{top:75px;}
+100%{top:150px;}
+}
+#obstacle{
+width: 25px;
+height: 25px;
+border-radius: 50%;
+border:2px solid black;
+background-color: blue;
+position: relative;
+top: 120px;
+left:475px;
+animation: none;
+}
+@keyframes block{
+0%{left:475px;}
+100%{left:-25px;}
+}
+#muteButton{
+margin-left:270px;
+border-radius:50%;
+width:40px;
+height: 40px;
+margin-bottom:10px;
+}
+#start{
+margin-left:240px;
+margin-top:20px;
+background:#4eb8dd;
+color:#000;
+border-radius:5px;
+cursor:pointer;
+padding:5px;
+padding-left:20px;
+padding-right:20px;
+text-transform:uppercase;
+font-weight:600;
+font-style:italic;
+letter-spacing:3px;
+font-family:sans-serif;
+border:3px solid black;
+font-size:16px;
+text-shadow: 0 3px 5px red;
+transition: background-color .2s ease-out;
+}
+#start:hover{
+border:3px solid red;
+}
+#devname{
+text-align:center;
+padding:10px;
+background:yellow;
+font-weight:600;
+font-style:italic;
+font-size:18px;
+letter-spacing:1px;
+font-family:sans-serif;
+text-shadow: 0 3px 7px blue;
+}
+</style>
+</head>
+<body>
+<div id="cont">
+<img src="soundIcon.png" onclick="changeSound()" id="muteButton"/>
+<p id="devname">Developed by Bhabajyoti Kalita</p>
+<div id="game">
+<b>
+<p id="highScore" style="position: absolute; left:100px">Highscore: 0</p>
+<p id="score" style="position: absolute; left: 400px">Score: 0</p>
+</b>
+<div id="player" style='animation: "none";'></div>
+<div id="obstacle"></div>
+</div>
+<button onclick="start()" id="start">Start</button>
+</div>
+<script>
+var mute = "no";
+document.getElementById("highScore").innerHTML = "Highscore: " + localStorage.highScore;
+var score = 0;
+var up = 1;
+var ded = "yes";
+setInterval(checkPlayer, 10);
+document.addEventListener("keydown", jump);
+var player = document.getElementById("player");
+var obstacle = document.getElementById("obstacle");
+function jump(){
+if(player.style.animation != "500ms ease 0s 1 normal none running jump"){
+if(mute == "no"){
+var jump = new Audio("jump.wav");
+jump.play()
+}
+player.style.animation = "jump 500ms";
+setTimeout(remove, 500);
+
+}
+}
+function remove(){
+
+player.style.animation = "none";
+}
+function checkPlayer(){
+var characterTop = parseInt(window.getComputedStyle(player).getPropertyValue("top"));
+var blockLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
+if(blockLeft<20 && blockLeft>0 && characterTop>125){
+dead();
+}
+
+else{
+if(ded=="no"){
+
+score++;
+document.getElementById("score").innerHTML = "Score: " + score;
+if(score>500 && score<1000){
+obstacle.style.animation = "none";
+document.getElementById("obstacle").style.animation = "block 850ms infinite linear";
+if(up == 1){
+up++;
+if(mute == "no"){
+var level = new Audio("levelUp.wav");
+level.play()
+}
+}
+}
+if(score>2000 && score<4999){
+if(up == 2){
+up++;
+if(mute == "no"){
+var level = new Audio("levelUp.wav");
+level.play()
+}
+obstacle.style.animation = "none";
+document.getElementById("obstacle").style.animation = "block 750ms infinite linear";
+}
+}
+if(score<5000){
+if(up == 3){
+up++;
+if(mute == "no"){
+var level = new Audio("levelUp.wav");
+level.play()
+}
+obstacle.style.animation = "none";
+document.getElementById("obstacle").style.animation = "block 600ms infinite linear";
+}
+}
+}
+}
+}
+function dead(){
+if(mute == "no"){
+var death = new Audio("death.wav");
+death.play()
+}
+
+
+document.getElementById("obstacle").style.animation = "p";
+document.getElementById("score").innerHTML = "Score: " + score;
+ded = "yes";
+document.getElementById("start").style.display = "block";
+obstacle.style.display = "none";
+
+if(localStorage.highScore){
+if(score>localStorage.highScore){
+localStorage.highScore = score;
+}
+}
+else{
+localStorage.setItem("highScore", score);
+}
+document.getElementById("highScore").innerHTML = "Highscore: " + localStorage.highScore;
+
+}
+function start(){
+up = 1;
+score = 0;
+ded = "no";
+document.getElementById("obstacle").style.animation = "block 1s infinite linear";
+document.getElementById("start").style.display = "none";
+obstacle.style.display = "block";
+}
+
+function changeSound(){
+if(mute == "no"){
+document.getElementById("muteButton").src = "muteIcon.png";
+mute = "yes";
+}
+else if(mute == "yes"){
+document.getElementById("muteButton").src = "soundIcon.png";
+mute = "no";
+}
+}
+</script>
+</body>
+</html>
